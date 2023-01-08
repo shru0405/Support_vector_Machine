@@ -1,0 +1,183 @@
+# Importing required libraries
+from seaborn import load_dataset, pairplot
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# Loading and exploring the dataset
+df = load_dataset('penguins')
+print(df.head())
+
+
+# Dropping missing records
+df = df.dropna()
+print(len(df))
+
+# Plotting our penguin species features
+pairplot(df, hue='species')
+plt.show()
+
+models = (num_classes * (num_classes - 1)) / 2
+models = (3 * (3-2)) / 2
+models = (3 * 2) / 2
+models = 6 / 2
+models = 3
+
+# Splitting the data
+X = df[['bill_length_mm', 'bill_depth_mm']]
+y = df['species']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=100)
+
+# The SVC Class from Sklearn
+
+sklearn.svm.SVC(*, 
+    C=1.0,                          
+    kernel='rbf',                    
+    degree=3,                        
+    gamma='scale',                  
+    coef0=0.0,                      
+    shrinking=True,                 
+    probability=False,              
+    tol=0.001,                      
+    cache_size=200,                 
+    class_weight=None,             
+    verbose=False,                 
+    max_iter=- 1,                   
+    decision_function_shape='ovr',  
+    break_ties=False,               
+    random_state=None              
+)
+
+# Building and training 
+clf = SVC(kernel='linear')
+clf.fit(X_train, y_train)
+
+# Making predictions with  data
+predictions = clf.predict(X_test)
+print(predictions[:5])
+
+# Rerunning the algorithm with a binary classifier
+df = load_dataset('penguins')
+df = df.dropna()
+df = df[df['species'] != 'Gentoo']    # This limits us to two classes
+
+# X = df.select_dtypes('number')
+X = df[['bill_length_mm', 'bill_depth_mm']]
+y = df['species']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=100)
+
+clf = SVC(kernel='linear')
+clf.fit(X_train, y_train)
+
+# Visualizing the linear function for SVM classifier
+import numpy as np
+from seaborn import scatterplot
+w = clf.coef_[0]
+b = clf.intercept_[0]
+x_visual = np.linspace(32,57)
+y_visual = -(w[0] / w[1]) * x_visual - b / w[1]
+
+scatterplot(data = X_train, x='bill_length_mm', y='bill_depth_mm', hue=y_train)
+plt.plot(x_visual, y_visual)
+plt.show()
+
+# Testing the accuracy
+df = load_dataset('penguins')
+df = df.dropna()
+
+X = df[['bill_length_mm', 'bill_depth_mm']]
+y = df['species']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=100)
+
+clf = SVC(kernel='linear')
+clf.fit(X_train, y_train)
+
+predictions = clf.predict(X_test)
+print(accuracy_score(y_test, predictions))
+
+# Transforming non numerical values using one-hot encoding
+from seaborn import load_dataset, pairplot
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import make_column_transformer
+
+df = load_dataset('penguins')
+df = df.dropna()
+
+X = df.drop(columns = ['species'])
+y = df['species']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 100)
+
+column_transformer = make_column_transformer(
+    (OneHotEncoder(), ['sex', 'island']),
+    remainder='passthrough')
+
+X_train = column_transformer.fit_transform(X_train)
+X_train = pd.DataFrame(data=X_train, columns=column_transformer.get_feature_names_out())
+
+# Scaling the data in sklearn
+
+from seaborn import load_dataset, pairplot
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import make_column_transformer
+from sklearn.preprocessing import StandardScaler
+
+df = load_dataset('penguins')
+df = df.dropna()
+
+X = df.drop(columns = ['species'])
+y = df['species']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 100)
+
+column_transformer = make_column_transformer(
+    (OneHotEncoder(), ['sex', 'island']),
+    (StandardScaler(), ['bill_depth_mm', 'bill_length_mm', 'flipper_length_mm', 'body_mass_g']),
+    remainder='passthrough')
+
+X_train = column_transformer.fit_transform(X_train)
+X_train = pd.DataFrame(data=X_train, columns=column_transformer.get_feature_names_out())
+
+
+# Finding the best hyperparameters
+params = {
+    'C': [0.1, 1, 10, 100, 1000],
+    'gamma': [1, 0.1, 0.01, 0.001, 0.0001],
+    'kernel': ['rbf']
+}
+
+clf = GridSearchCV(
+    estimator=SVC(),
+    param_grid=params,
+    cv=5,
+    n_jobs=5,
+    verbose=1
+)
+
+clf.fit(X_train, y_train)
+print(clf.best_params_)
+
+
+
+
+
+
+
+
+
+
